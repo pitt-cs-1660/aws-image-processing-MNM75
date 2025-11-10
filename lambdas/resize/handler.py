@@ -52,6 +52,32 @@ def resize_handler(event, context):
                     #
                     ######
 
+                    image = download_from_s3(bucket_name, object_key)
+                    filename = Path(object_key).name
+                    stem = Path(object_key).stem
+
+                    resized_image = image.resize((512, 512), Image.Resampling.LANCZOS)
+                    output_key_resize = f"processed/resize/{filename}"
+                    upload_to_s3(bucket_name, output_key_resize, resized_image)
+
+                    greyscale_image = image.convert('L')
+                    output_key_grey = f"processed/greyscale/{filename}"
+                    upload_to_s3(bucket_name, output_key_grey, greyscale_image)
+
+                    exif_data = {
+                        'width': image.width,
+                        'height': image.height,
+                        'format': image.format,
+                        'mode': image.mode
+                    }
+
+                    exif = image.getexif()
+                    for tag_id, value in exif.items():
+                        exif_data[str(tag_id)] = str(value)
+
+                    output_key_exif = f"processed/exif/{stem}.json"
+                    upload_to_s3(bucket_name, output_key_exif, json.dumps(exif_data, indent=2), 'application/json')
+
                     processed_count += 1
 
                 except Exception as e:
