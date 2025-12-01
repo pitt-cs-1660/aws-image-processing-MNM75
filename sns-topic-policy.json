@@ -7,7 +7,7 @@
         "Service": "s3.amazonaws.com"
       },
       "Action": "SNS:Publish",
-      "Resource": "arn:aws:sns:us-east-1:968894489913:image-processing-topic",
+      "Resource": "arn:aws:sns:us-east-2:968894489913:image-processing-topic",
       "Condition": {
         "StringEquals": {
           "aws:SourceAccount": "968894489913"
